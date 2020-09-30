@@ -9,6 +9,7 @@ import logo from "./ethereumLogo.png";
 
 import { addresses, abis } from "@project/contracts";
 import GET_TRANSFERS from "./graphql/subgraph";
+import ENS, { getEnsAddress } from 'ensjs-v2'
 
 async function readOnChainData() {
   // Should replace with the end-user wallet, e.g. Metamask
@@ -40,7 +41,16 @@ function WalletButton({ provider, loadWeb3Modal }) {
 function App() {
   const { loading, error, data } = useQuery(GET_TRANSFERS);
   const [provider, setProvider] = useState();
-
+  let ens
+  console.log({provider})
+  if(provider){
+    const ensAddress = getEnsAddress('1')
+    console.log({provider, ensAddress})
+    // NOTE: Looks blowing up here
+    ens = new ENS({ provider, ensAddress })
+    // console.log('***1', ens.name('resolver.eth').getAddress())
+  }
+  
   /* Open wallet selection modal. */
   const loadWeb3Modal = useCallback(async () => {
     const newProvider = await web3Modal.connect();
