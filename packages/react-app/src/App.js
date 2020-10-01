@@ -49,12 +49,13 @@ function App() {
   /* Open wallet selection modal. */
   const loadWeb3Modal = useCallback(async () => {
     const newProvider = await web3Modal.connect();
-    const ensAddress = getEnsAddress('1')
+    const ensAddress = getEnsAddress(newProvider.networkVersion)
+    const _provider = new Web3Provider(newProvider)
     const _ens = new ENS({ provider:newProvider, ensAddress })
-    setEns(_ens)
     const myName = await _ens.getName(newProvider.selectedAddress)
     setMyName(myName.name)
-    setProvider(new Web3Provider(newProvider));
+    setProvider(_provider);
+    setEns(_ens)
   }, []);
 
   /* If user has loaded a wallet before, load it automatically. */
@@ -69,7 +70,7 @@ function App() {
       console.log({ transfers: data.transfers });
     }
   }, [loading, error, data]);
-
+  const networkName = provider && provider._network && provider._network.name || 'Not connected to any network'
   return (
     <div>
       <Header>
@@ -83,7 +84,12 @@ function App() {
         <Button hidden onClick={() => readOnChainData()}>
           Read On-Chain Balance
         </Button>
-        { myName }
+        <p>
+          { networkName === 'homestead' ? 'mainnet' : networkName }
+        </p>
+        <p>
+          { myName }
+        </p>
       </Body>
     </div>
   );
