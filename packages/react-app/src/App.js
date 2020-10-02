@@ -49,6 +49,7 @@ function App() {
   const [value, setValue] = useState();
   const [address, setAddress] = useState();
   const [reverseRecord, setReverseRecord] = useState();
+  const [subdomain, setSubdomain] = useState();
 
   const [ens, setEns] = useState();
   
@@ -67,8 +68,15 @@ function App() {
   }
 
   const handleSubmitReverseRecord = async()=>{
-    console.log({reverseRecord})
     await ens.setReverseRecord(reverseRecord)
+  }
+
+  const handleSubdomain = async(event)=>{
+    setSubdomain(event.target.value)
+  }
+
+  const handleSubmitSubdomain = async()=>{
+    await ens.name(myName).createSubdomain(subdomain)
   }
 
   /* Open wallet selection modal. */
@@ -145,6 +153,13 @@ function App() {
               <h5>Set reverse record</h5>
               <input onChange={handleReverseRecord} placeholder="Enter ENS name" value={reverseRecord} ></input>
               <button onClick={handleSubmitReverseRecord} > Set </button>
+              {addressMatched ? (
+                <p>
+                  <h5>Create subdomain</h5>
+                  <input onChange={handleSubdomain} placeholder="Enter Subdomain" value={subdomain} ></input>
+                  <button onClick={handleSubmitSubdomain} > Create </button>
+                </p>
+              ): ('')}
             </p>
           ) : ('')
         }
