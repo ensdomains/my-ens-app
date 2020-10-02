@@ -27,5 +27,9 @@
     "packages": [
       "packages/*"
     ]
+  },
+  "dependencies": {
+    "@apollo/react-hooks": "^4.0.0",
+    "apollo-boost": "^0.4.9"
   }
 }
