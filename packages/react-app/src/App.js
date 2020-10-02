@@ -44,8 +44,22 @@ function App() {
   const { loading, error, data } = useQuery(GET_TRANSFERS);
   const [provider, setProvider] = useState();
   const [myName, setMyName] = useState();
+  const [myAddress, setMyAddress] = useState();
+  const [myNameAddress, setMyNameAddress] = useState();
+  const [value, setValue] = useState();
+  const [address, setAddress] = useState();
   const [ens, setEns] = useState();
   
+  const handleName = async(event)=>{
+    setValue(event.target.value)
+  }
+
+  const handleGetAddress = async()=>{
+    const _address = await ens.name(value).getAddress()
+    console.log({ens, value, _address})
+    setAddress(_address)
+  }
+
   /* Open wallet selection modal. */
   const loadWeb3Modal = useCallback(async () => {
     const newProvider = await web3Modal.connect();
@@ -53,7 +67,13 @@ function App() {
     const _provider = new Web3Provider(newProvider)
     const _ens = new ENS({ provider:newProvider, ensAddress })
     const myName = await _ens.getName(newProvider.selectedAddress)
+    console.log({
+      networkVersion: newProvider.networkVersion,
+      ensAddress
+    })
     setMyName(myName.name)
+    setMyAddress(newProvider.selectedAddress)
+    setMyNameAddress(await _ens.name(myName.name).getAddress())
     setProvider(_provider);
     setEns(_ens)
   }, []);
@@ -87,9 +107,26 @@ function App() {
         <p>
           { networkName === 'homestead' ? 'mainnet' : networkName }
         </p>
-        <p>
-          { myName }
-        </p>
+        {
+          ens ? (
+           <p>
+              <ul>
+                <li>
+                  My address: { myAddress && myAddress.slice(0, 5) }...
+                </li>
+                <li>
+                  My Name: { myName } (
+                    { myNameAddress && myNameAddress.slice(0, 5) }...
+                  )
+                </li>
+              </ul>
+
+              <input onChange={handleName} placeholder="Enter ENS name" value={value} ></input>
+              <button onClick={handleGetAddress} >  Lookup Name </button>
+            <p>{ address }</p>
+            </p>
+          ) : ('')
+        }
       </Body>
     </div>
   );
