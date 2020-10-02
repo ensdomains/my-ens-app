@@ -48,9 +48,11 @@ function App() {
   const [myNameAddress, setMyNameAddress] = useState();
   const [value, setValue] = useState();
   const [address, setAddress] = useState();
+  const [reverseRecord, setReverseRecord] = useState();
+
   const [ens, setEns] = useState();
   
-  const handleName = async(event)=>{
+  const handleAddress = async(event)=>{
     setValue(event.target.value)
   }
 
@@ -58,6 +60,15 @@ function App() {
     const _address = await ens.name(value).getAddress()
     console.log({ens, value, _address})
     setAddress(_address)
+  }
+
+  const handleReverseRecord = async(event)=>{
+    setReverseRecord(event.target.value)
+  }
+
+  const handleSubmitReverseRecord = async()=>{
+    console.log({reverseRecord})
+    await ens.setReverseRecord(reverseRecord)
   }
 
   /* Open wallet selection modal. */
@@ -91,6 +102,7 @@ function App() {
     }
   }, [loading, error, data]);
   const networkName = provider && provider._network && provider._network.name || 'Not connected to any network'
+  const addressMatched = myAddress && myNameAddress && myAddress.toLocaleLowerCase() === myNameAddress.toLocaleLowerCase()
   return (
     <div>
       <Header>
@@ -110,20 +122,29 @@ function App() {
         {
           ens ? (
            <p>
+             <h5>Your information</h5>
               <ul>
                 <li>
                   My address: { myAddress && myAddress.slice(0, 5) }...
                 </li>
-                <li>
-                  My Name: { myName } (
-                    { myNameAddress && myNameAddress.slice(0, 5) }...
+                <li style={{color: addressMatched ? 'white' : 'red'}}>
+                  My Name: { myName } ({ myNameAddress && myNameAddress.slice(0, 5) }...
+                  {
+                    !addressMatched ? (
+                      <span > address mismatch</span>
+                    ) : ('')
+                  }
                   )
                 </li>
               </ul>
 
-              <input onChange={handleName} placeholder="Enter ENS name" value={value} ></input>
+              <h5>ENS name lookup</h5>
+              <input onChange={handleAddress} placeholder="Enter ENS name" value={value} ></input>
               <button onClick={handleGetAddress} >  Lookup Name </button>
-            <p>{ address }</p>
+              <p>{ address }</p>
+              <h5>Set reverse record</h5>
+              <input onChange={handleReverseRecord} placeholder="Enter ENS name" value={reverseRecord} ></input>
+              <button onClick={handleSubmitReverseRecord} > Set </button>
             </p>
           ) : ('')
         }
