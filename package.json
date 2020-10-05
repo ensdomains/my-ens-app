@@ -8,6 +8,8 @@
     "yarn"
   ],
   "private": true,
+  "author": "Makoto Inoue <makoto@ens.domains>",
+  "license": "MIT",
   "scripts": {
     "subgraph:auth": "yarn workspace @project/subgraph auth",
     "subgraph:codegen": "yarn workspace @project/subgraph codegen",
