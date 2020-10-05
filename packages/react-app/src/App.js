@@ -65,6 +65,9 @@ function App() {
   const [address, setAddress] = useState();
   const [reverseRecord, setReverseRecord] = useState();
   const [subdomain, setSubdomain] = useState();
+  const [pending, setPending] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
+
   const { data:subdomainData } = useQuery(GET_SUBDOMAINS, {
     skip: !myName,
     variables: { id: namehash(myName) }
@@ -77,7 +80,6 @@ function App() {
 
   const handleGetAddress = async()=>{
     const _address = await ens.name(value).getAddress()
-    console.log({ens, value, _address})
     setAddress(_address)
   }
 
@@ -86,7 +88,12 @@ function App() {
   }
 
   const handleSubmitReverseRecord = async()=>{
-    await ens.setReverseRecord(reverseRecord)
+    let tx = await ens.setReverseRecord(reverseRecord)
+    setPending(true)
+    await tx.wait()
+    setPending(false)
+    setConfirmed(true)
+    loadWeb3Modal()
   }
 
   const handleSubdomain = async(event)=>{
@@ -94,7 +101,12 @@ function App() {
   }
 
   const handleSubmitSubdomain = async()=>{
-    await ens.name(myName).createSubdomain(subdomain)
+    let tx = await ens.name(myName).createSubdomain(subdomain)
+    setPending(true)
+    await tx.wait()
+    setPending(false)
+    setConfirmed(true)
+    loadWeb3Modal()
   }
 
   /* Open wallet selection modal. */
@@ -145,6 +157,12 @@ function App() {
         <p>
           { networkName === 'homestead' ? 'mainnet' : networkName }
         </p>
+        <p style={{color: pending ? 'yellow' : 'green'}}>
+          { pending ? ('Pending...') : (
+            confirmed ? ('Confirmed') : ('')
+          )}
+        </p>
+
         {
           ens ? (
            <p>
