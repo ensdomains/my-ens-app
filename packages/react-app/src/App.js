@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Contract } from "@ethersproject/contracts";
 import { Web3Provider, getDefaultProvider } from "@ethersproject/providers";
 import { useQuery } from "@apollo/react-hooks";
-
+import ApolloClient from "apollo-boost";
 import { Body, Button, Header, Image, Link } from "./components";
 import { web3Modal, logoutOfWeb3Modal } from './utils/web3Modal'
 
@@ -55,7 +55,7 @@ function WalletButton({ provider, loadWeb3Modal }) {
   );
 }
 
-function App() {
+function App({endpoints}) {
   const { loading, error, data } = useQuery(GET_TRANSFERS);
   const [provider, setProvider] = useState();
   const [myName, setMyName] = useState();
@@ -67,9 +67,11 @@ function App() {
   const [subdomain, setSubdomain] = useState();
   const [pending, setPending] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
-
+  const networkName = provider && provider._network && provider._network.name
+  const addressMatched = myAddress && myNameAddress && myAddress.toLocaleLowerCase() === myNameAddress.toLocaleLowerCase()
   const { data:subdomainData } = useQuery(GET_SUBDOMAINS, {
     skip: !myName,
+    client: endpoints[networkName],
     variables: { id: namehash(myName) }
   });
   const [ens, setEns] = useState();
@@ -116,10 +118,6 @@ function App() {
     const _provider = new Web3Provider(newProvider)
     const _ens = new ENS({ provider:newProvider, ensAddress })
     const myName = await _ens.getName(newProvider.selectedAddress)
-    console.log({
-      networkVersion: newProvider.networkVersion,
-      ensAddress
-    })
     setMyName(myName.name)
     setMyAddress(newProvider.selectedAddress)
     setMyNameAddress(await _ens.name(myName.name).getAddress())
@@ -139,8 +137,6 @@ function App() {
       console.log({ transfers: data.transfers });
     }
   }, [loading, error, data]);
-  const networkName = provider && provider._network && provider._network.name || 'Not connected to any network'
-  const addressMatched = myAddress && myNameAddress && myAddress.toLocaleLowerCase() === myNameAddress.toLocaleLowerCase()
   return (
     <div>
       <Header>
@@ -155,7 +151,7 @@ function App() {
           Read On-Chain Balance
         </Button>
         <p>
-          { networkName === 'homestead' ? 'mainnet' : networkName }
+          { networkName === 'homestead' ? 'mainnet' : (networkName === undefined ? ('Not connected to any network'): (networkName)) }
         </p>
         <p style={{color: pending ? 'yellow' : 'green'}}>
           { pending ? ('Pending...') : (
