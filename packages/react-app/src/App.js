@@ -150,7 +150,7 @@ function App({endpoints}) {
         <Button hidden onClick={() => readOnChainData()}>
           Read On-Chain Balance
         </Button>
-        <p>
+        <p class='network'>
           { networkName === 'homestead' ? 'mainnet' : (networkName === undefined ? ('Not connected to any network'): (networkName)) }
         </p>
         <p style={{color: pending ? 'yellow' : 'green'}}>
@@ -180,7 +180,7 @@ function App({endpoints}) {
 
               <h5>ENS name lookup</h5>
               <input onChange={handleAddress} placeholder="Enter ENS name" value={value} ></input>
-              <button onClick={handleGetAddress} >  Lookup Name </button>
+              <button onClick={handleGetAddress} >  Lookup </button>
               <p>{ address }</p>
               <h5>Set reverse record</h5>
               <input onChange={handleReverseRecord} placeholder="Enter ENS name" value={reverseRecord} ></input>
@@ -193,11 +193,13 @@ function App({endpoints}) {
                   {subdomainData ? (
                     <p>
                       <h5>{myName} subdomains</h5>
+                      <ul>
                       {subdomainData.domain.subdomains.map((s) => {
-                        return (<p>{
+                        return (<li>{
                           s.labelName
-                        }.{myName}</p>)
+                        }.{myName}</li>)
                       })}
+                      </ul>
                     </p>
                   ) : ('')}
                 </p>
