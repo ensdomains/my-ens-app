@@ -1,5 +1,5 @@
 
-This is a sample app showcasing `ensjs` library to interact with ENS.
+This is a sample app showcasing [`ensjs`](https://www.npmjs.com/package/@ensdomains/ensjs) library to interact with ENS.
 This project was bootstrapped with [Create Eth App](https://github.com/paulrberg/create-eth-app).
 
 ### How to setup
