@@ -22,6 +22,15 @@ This demo app shows three basic ways to integrate ENS into your dapp.
 
 All the logic is in [App.js](https://github.com/ensdomains/my-ens-app/blob/master/packages/react-app/src/App.js)
 
+
+## Instantiate ENS 
+
+```
+import ENS, { getEnsAddress } from '@ensdomains/ensjs'
+const ensAddress = getEnsAddress('1') // Pass chainId
+const ens = new ENS({ provider, ensAddress })
+```
+
 ## Resolve ENS name
 
 ```
@@ -46,6 +55,7 @@ tx.wait()
 ## Let users name things
 
 ```
+
 let tx = await ens.name(myName).createSubdomain(subdomain)
 tx.wait()
 ```
